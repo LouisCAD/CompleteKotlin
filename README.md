@@ -149,6 +149,14 @@ Kotlin is developed in the open, and folks at JetBrains that maintain and improv
 If there's any change arriving into Kotlin that would affect this plugin, or that, who knows,
 would enable CompleteKotlin to be even more complete, if it's possible, I'm going to be aware, and I'll address it and release a new version, most likely ahead of time, so you should never have to choose between upgrading Kotlin and keeping Kotlin complete.
 
+### How does it work?
+
+You can start exploring the code in IntelliJ IDEA starting from [the CompleteKotlin.kt file](plugin/src/main/kotlin/com/louiscad/complete_kotlin/CompleteKotlinPlugin.kt), at the time of writing this, it's less than 1000 Kotlin lines overall.
+
+In a nutshell, it downloads files that contain platform klibs intended for other OSes, and puts them in the right directories. It only downloads the missing ones, so it will have no effect on macOS if you don't use Windows (aka. mingw) or Linux MIPS targets for example.
+
+These platform klibs notably contain all platform APIs as Kotlin symbols that the IDE will recognize.
+
 ### I've seen you are pair-programming with folks from the community, can I join?
 
 Yes, just reach out via Twitter DM, Kotlin Slack or something, we'll work it out.
