@@ -4,7 +4,7 @@ on:
     - cron: "45 11 * * 4" # Every Thursday at 11:45 (AM). Why is this brainfuck syntax still the main standard??
   workflow_dispatch:
 jobs:
-  deploy:
+  run-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
