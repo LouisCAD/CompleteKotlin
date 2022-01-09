@@ -13,15 +13,17 @@ internal interface CompilerVersion : Serializable {
     val major: Int
     val minor: Int
     val maintenance: Int
+
+    @Deprecated("Milestone is deprecated in favour to MetaVersion's M1 and M2")
     val milestone: Int
+
     val build: Int
 
     fun toString(showMeta: Boolean, showBuild: Boolean): String
 
     companion object {
         // major.minor.patch-meta-build where patch, meta and build are optional.
-        private val versionPattern =
-            "(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-M(\\p{Digit}))?(?:-(\\p{Alpha}\\p{Alnum}*))?(?:-(\\d+))?".toRegex()
+        private val versionPattern = "(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-(\\p{Alpha}\\p{Alnum}|[\\p{Alpha}-]*))?(?:-(\\d+))?".toRegex()
 
         fun current(objectForResourceLookup: Any): CompilerVersion = fromString(
             objectForResourceLookup.loadPropertyFromResources(
@@ -31,16 +33,16 @@ internal interface CompilerVersion : Serializable {
         )
 
         fun fromString(version: String): CompilerVersion {
-            val (major, minor, maintenance, milestone, metaString, build) =
+            val (major, minor, maintenance, metaString, build) =
                 versionPattern.matchEntire(version)?.destructured
                     ?: throw IllegalArgumentException("Cannot parse Kotlin/Native version: $version")
 
-            return CompilerVersion(
+            return CompilerVersionImpl(
                 MetaVersion.findAppropriate(metaString),
                 major.toInt(),
                 minor.toInt(),
                 maintenance.toIntOrNull() ?: 0,
-                milestone.toIntOrNull() ?: -1,
+                -1,
                 build.toIntOrNull() ?: -1
             )
         }
@@ -50,7 +52,7 @@ internal interface CompilerVersion : Serializable {
             major: Int,
             minor: Int,
             maintenance: Int,
-            milestone: Int = 0,
+            milestone: Int = -1,
             build: Int = -1
         ): CompilerVersion = CompilerVersionImpl(
             meta = meta,
@@ -87,6 +89,7 @@ private data class CompilerVersionImpl(
     override val major: Int,
     override val minor: Int,
     override val maintenance: Int,
+    @Deprecated("Milestone is deprecated in favour to MetaVersion's M1 and M2")
     override val milestone: Int,
     override val build: Int
 ) : CompilerVersion {
@@ -95,14 +98,8 @@ private data class CompilerVersionImpl(
         append(major)
         append('.')
         append(minor)
-        if (maintenance != 0) {
-            append('.')
-            append(maintenance)
-        }
-        if (milestone != -1) {
-            append("-M")
-            append(milestone)
-        }
+        append('.')
+        append(maintenance)
         if (showMeta) {
             append('-')
             append(meta.metaString)
@@ -116,7 +113,7 @@ private data class CompilerVersionImpl(
     private val isRelease: Boolean
         get() = meta == MetaVersion.RELEASE
 
-    private val versionString by lazy { toString(!isRelease, !isRelease) }
+    private val versionString by lazy { toString(!isRelease, true) }
 
     override fun toString() = versionString
 }
