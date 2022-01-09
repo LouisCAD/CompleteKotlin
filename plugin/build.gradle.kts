@@ -5,7 +5,7 @@ plugins {
     id("com.gradle.plugin-publish")
 }
 
-version = "1.0.0"
+version = "1.1.0-SNAPSHOT"
 group = "com.louiscad.complete-kotlin"
 
 gradlePlugin {
