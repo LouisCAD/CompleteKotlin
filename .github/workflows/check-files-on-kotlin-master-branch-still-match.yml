@@ -1,5 +1,7 @@
 name: Check files on kotlin master branch still match
 on:
+  schedule:
+    - cron: "45 11 * * 4" # Every Thursday at 11:45 (AM). Why is this brainfuck syntax still the main standard??
   workflow_dispatch:
 jobs:
   deploy:
