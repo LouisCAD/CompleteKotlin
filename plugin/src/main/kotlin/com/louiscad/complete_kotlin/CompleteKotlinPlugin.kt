@@ -10,44 +10,49 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByType
 
 class CompleteKotlinPlugin : Plugin<Any> {
 
     override fun apply(target: Any) {
-        require(target is Settings) {
-            val notInExtraClause: String = when (target) {
-                is Project -> when (target) {
-                    target.rootProject -> ", not in build.gradle(.kts)"
-                    else -> ", not in a build.gradle(.kts) file."
-                }
-                is Gradle -> ", not in an initialization script."
-                else -> ""
-            }
-            """
-            plugins.id("com.louiscad.complete-kotlin") must be configured in settings.gradle(.kts)$notInExtraClause.
-            See https://github.com/LouisCAD/CompleteKotlin
-            """.trimIndent()
-        }
         val isInCi: Boolean = System.getenv("CI") == "true"
         if (isInCi) {
             println("CompleteKotlin has detected it's being run on CI, so it disabled itself to save bandwidth.")
             return
         }
-        setup(target)
-    }
-
-    private fun setup(settings: Settings) {
+        /* // Commented out because we currently have no config options in the Gradle extension.
         settings.extensions.create<CompleteKotlinExtension>("completeKotlin")
         settings.gradle.settingsEvaluated {
             val extension: CompleteKotlinExtension = settings.extensions.getByType()
-
-            settings.gradle.beforeProject {
-                project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
-                    project.completePlatformKlibsIfNeeded()
-                }
+            // ...
+        }
+        */
+        when (target) {
+            is Settings -> target.gradle.beforeProject {
+                setupIfNeeded(project)
             }
+            is Project -> when (target) {
+                target.rootProject -> target.allprojects {
+                    setupIfNeeded(project)
+                }
+                else -> setupIfNeeded(target)
+            }
+            else -> {
+                val notInExtraClause: String = when (target) {
+                    is Gradle -> ", not in an initialization script."
+                    else -> ""
+                }
+                val errorMessage = """
+                plugins.id("com.louiscad.complete-kotlin") must be configured in settings.gradle(.kts)$notInExtraClause.
+                See https://github.com/LouisCAD/CompleteKotlin
+                """.trimIndent()
+                throw IllegalArgumentException(errorMessage)
+            }
+        }
+    }
+
+    private fun setupIfNeeded(project: Project) {
+        project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
+            project.completePlatformKlibsIfNeeded()
         }
     }
 }
