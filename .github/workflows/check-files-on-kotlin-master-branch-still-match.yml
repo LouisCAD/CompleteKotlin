@@ -1,0 +1,10 @@
+name: Check files on kotlin master branch still match
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./Check-our-files-are-up-to-date.main.kts
+        working-directory: "files-changes-check"
