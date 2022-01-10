@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Louis Cognault Ayeva Derman
+ * Copyright 2021-2022 Louis Cognault Ayeva Derman
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
@@ -10,10 +10,13 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
+import org.gradle.tooling.UnsupportedVersionException
+import org.gradle.util.GradleVersion
 
 class CompleteKotlinPlugin : Plugin<Any> {
 
     override fun apply(target: Any) {
+        checkGradleVersionIsSupported()
         val isInCi: Boolean = System.getenv("CI") == "true"
         if (isInCi) {
             println("CompleteKotlin has detected it's being run on CI, so it disabled itself to save bandwidth.")
@@ -53,6 +56,20 @@ class CompleteKotlinPlugin : Plugin<Any> {
     private fun setupIfNeeded(project: Project) {
         project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
             project.completePlatformKlibsIfNeeded()
+        }
+    }
+
+    private fun checkGradleVersionIsSupported() {
+        val minimumGradleVersionString = "6.8" // Because we require Kotlin 1.4
+        val minimumGradleVersion = GradleVersion.version(minimumGradleVersionString)
+        minimumGradleVersion.version
+        if (GradleVersion.current() < minimumGradleVersion) {
+            throw UnsupportedVersionException(
+                """
+            The plugin "com.louiscad.complete-kotlin" only works with Gradle $minimumGradleVersionString and above.
+            See https://github.com/LouisCAD/CompleteKotlin
+            """.trimIndent()
+            )
         }
     }
 }

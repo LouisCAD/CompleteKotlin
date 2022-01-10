@@ -33,8 +33,8 @@ dependencies {
     testImplementation(Kotlin.test.junit5)
 }
 
-tasks.compileKotlin.configure {
-    kotlinOptions.apiVersion = "1.3"
+tasks.withType<KotlinJvmCompile>().configureEach {
+    kotlinOptions.apiVersion = "1.4"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
