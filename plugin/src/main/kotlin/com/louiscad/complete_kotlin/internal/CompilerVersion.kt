@@ -24,7 +24,7 @@ internal interface CompilerVersion : Serializable {
 
     companion object {
         // major.minor.patch-meta-build where patch, meta and build are optional.
-        private val versionPattern = "(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-(\\p{Alpha}\\p{Alnum}|[\\p{Alpha}-]*))?(?:-(\\d+))?".toRegex()
+        private val versionPattern = "(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-(\\p{Alpha}*\\p{Alnum}|[\\p{Alpha}-]*))?(?:-(\\d+))?".toRegex()
 
         fun current(
             project: Project,
@@ -94,7 +94,7 @@ private val firstKotlinVersionWithArchDependentCompilerArchives = CompilerVersio
     build = 1466
 )
 
-private fun CompilerVersion.isAtLeast(compilerVersion: CompilerVersion): Boolean {
+internal fun CompilerVersion.isAtLeast(compilerVersion: CompilerVersion): Boolean {
     if (this.major != compilerVersion.major) return this.major > compilerVersion.major
     if (this.minor != compilerVersion.minor) return this.minor > compilerVersion.minor
     if (this.maintenance != compilerVersion.maintenance) return this.maintenance > compilerVersion.maintenance
