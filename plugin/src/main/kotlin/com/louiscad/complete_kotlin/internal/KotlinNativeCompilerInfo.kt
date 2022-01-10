@@ -20,7 +20,8 @@ internal class KotlinNativeCompilerInfo(
         compilerVersion.supportsPlatformName() -> when (hostPlatform) {
             HostPlatform.current -> HostPlatform.platformName
             HostPlatform.MacOS -> "macos-aarch64"
-            else -> hostPlatform.simpleOsName
+            HostPlatform.Linux -> "linux-x86_64"
+            HostPlatform.Windows -> "mingw-x86_64"
         }
         else -> hostPlatform.simpleOsName
     }
