@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
+
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
@@ -5,7 +7,7 @@ plugins {
     id("com.gradle.plugin-publish")
 }
 
-version = "1.1.0-SNAPSHOT"
+version = file("version.txt").useLines { it.first() }.also { check(it == "1.1.0-SNAPSHOT") }
 group = "com.louiscad.complete-kotlin"
 
 gradlePlugin {
