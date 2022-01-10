@@ -23,6 +23,16 @@ internal fun Project.completePlatformKlibsIfNeeded() {
     //TODO: Get the CompilerVersion lazily (lazy delegate cannot be used)
     val compilerVersion = CompilerVersion.current(project = project, objectForResourceLookup = extension)
 
+    run {
+        val minimumKotlinVersion = "1.5.30"
+        if (compilerVersion.isAtLeast(CompilerVersion.fromString(minimumKotlinVersion)).not()) {
+            val errorMessage = "This version of CompleteKotlin requires the project to " +
+                    "use Kotlin $minimumKotlinVersion or newer. " +
+                    "Use version 1.0.0 of CompleteKotlin if you can't upgrade Kotlin in this project."
+            throw UnsupportedOperationException(errorMessage)
+        }
+    }
+
     val hostCompilerDirs = KotlinNativeCompilerDirs(compilerVersion)
 
 
