@@ -10,7 +10,7 @@ targets.
 Before, you had only autocompletion and symbol resolution for native APIs from your host Operating System.
 With CompleteKotlin, you get it for everything, regardless of your host OS:
 
-Your host OS becomes irrelevant to writing and reading code: 
+Your host OS becomes irrelevant to writing and reading code:
 
 - That means writing and reading iOS, iPadOS, watchOS, tvOS, and macOS code, **without macOS**.
 - That also means writing and reading Linux MIPS code, **without Linux**.
@@ -33,13 +33,22 @@ and a bit, or a lot of waiting, depending on your connection and your computer p
 
 ### Step 1: Add the plugin
 
-Take the `settings.gradle(.kts)` file located at the root of your Kotlin Multiplatform project,
-and add the following at the top of the file, but below the `pluginManagement` block if you have any:
+Take the `build.gradle(.kts)` file located at the root of your Kotlin Multiplatform project,
+and add the following at the top of the file:
 
 ```kts
 plugins {
-    id("com.louiscad.complete-kotlin") version "1.0.0"
+    id("com.louiscad.complete-kotlin") version "1.1.0"
 }
+```
+
+That will apply CompleteKotlin to all Kotlin multiplatform modules.
+
+If you're using [refreshVersions](https://github.com/jmfayard/refreshVersions) and don't want to miss any update,
+you can omit the version in the snippet above, and add the following in your `versions.properties` file instead:
+
+```properties
+plugin.com.louiscad.complete-kotlin=1.1.0
 ```
 
 ### Step 2: Click and wait
