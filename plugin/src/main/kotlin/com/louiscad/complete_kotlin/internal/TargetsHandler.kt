@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Louis Cognault Ayeva Derman
+ * Copyright 2021-2022 Louis Cognault Ayeva Derman
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
@@ -21,7 +21,7 @@ internal fun Project.completePlatformKlibsIfNeeded() {
     val extension = extensions.getByName("kotlin")
 
     //TODO: Get the CompilerVersion lazily (lazy delegate cannot be used)
-    val compilerVersion = CompilerVersion.current(objectForResourceLookup = extension)
+    val compilerVersion = CompilerVersion.current(project = project, objectForResourceLookup = extension)
 
     val hostCompilerDirs = KotlinNativeCompilerDirs(compilerVersion)
 

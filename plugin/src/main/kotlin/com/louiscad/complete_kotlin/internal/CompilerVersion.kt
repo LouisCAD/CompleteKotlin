@@ -6,6 +6,7 @@
 package com.louiscad.complete_kotlin.internal
 
 import com.louiscad.complete_kotlin.stuff.loadPropertyFromResources
+import org.gradle.api.Project
 import java.io.Serializable
 
 internal interface CompilerVersion : Serializable {
@@ -25,12 +26,29 @@ internal interface CompilerVersion : Serializable {
         // major.minor.patch-meta-build where patch, meta and build are optional.
         private val versionPattern = "(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-(\\p{Alpha}\\p{Alnum}|[\\p{Alpha}-]*))?(?:-(\\d+))?".toRegex()
 
-        fun current(objectForResourceLookup: Any): CompilerVersion = fromString(
-            objectForResourceLookup.loadPropertyFromResources(
-                propFileName = "project.properties",
-                property = "kotlin.native.version"
+        fun current(
+            project: Project,
+            objectForResourceLookup: Any
+        ): CompilerVersion = findKotlinGradlePluginVersion(project)?.let { fromString(it) }
+            ?: findKotlinGradlePluginVersion(project.rootProject)?.let { fromString(it) }
+            ?: fromString(
+                // This technique is the last used because it may return the wrong version (e.g. 1.5.31 for 1.5.32).
+                objectForResourceLookup.loadPropertyFromResources(
+                    propFileName = "project.properties",
+                    property = "kotlin.native.version"
+                )
             )
-        )
+
+        private fun findKotlinGradlePluginVersion(project: Project): String? {
+            project.buildscript.configurations.getByName("classpath").dependencies.let { dependencySet ->
+                return dependencySet.firstOrNull {
+                    it.group == "org.jetbrains.kotlin.multiplatform" &&
+                            it.name == "org.jetbrains.kotlin.multiplatform.gradle.plugin"
+                }?.version ?: dependencySet.firstOrNull {
+                    it.group == "org.jetbrains.kotlin" && it.name == "kotlin-gradle-plugin"
+                }?.version
+            }
+        }
 
         fun fromString(version: String): CompilerVersion {
             val (major, minor, maintenance, metaString, build) =
