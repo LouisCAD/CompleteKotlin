@@ -14,6 +14,8 @@ internal class KotlinNativeCompilerInfo(
 
     companion object {
         val konanDir = File(System.getProperty("user.home")).resolve(".konan")
+        val buildRawUrl = "https://complete-kotlin-prebuilt.louiscad.com/kotlin/native/builds"
+        var buildUrl = buildRawUrl
     }
 
     private val kindaSimpleOsName: String = when {
@@ -33,7 +35,7 @@ internal class KotlinNativeCompilerInfo(
     val archiveExtension: String = if (useZip) "zip" else "tar.gz"
 
     val repoUrl: String
-        get() = "https://complete-kotlin-prebuilt.louiscad.com/kotlin/native/builds".let { baseDownloadUrl ->
+        get() = buildUrl.ifEmpty { buildRawUrl }.let { baseDownloadUrl ->
             val releasePath = when (compilerVersion.meta) {
                 MetaVersion.DEV -> "dev"
                 else -> "releases"

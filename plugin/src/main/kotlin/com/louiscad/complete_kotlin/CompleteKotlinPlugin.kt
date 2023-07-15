@@ -5,6 +5,7 @@
 
 package com.louiscad.complete_kotlin
 
+import com.louiscad.complete_kotlin.internal.KotlinNativeCompilerInfo
 import com.louiscad.complete_kotlin.internal.completePlatformKlibsIfNeeded
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -54,6 +55,9 @@ class CompleteKotlinPlugin : Plugin<Any> {
     }
 
     private fun setupIfNeeded(project: Project) {
+        if (project.rootProject.hasProperty("kotlin.native.distribution.baseDownloadUrl")) {
+            KotlinNativeCompilerInfo.buildUrl = project.rootProject.property("kotlin.native.distribution.baseDownloadUrl")?.toString() ?: ""
+        }
         project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
             project.completePlatformKlibsIfNeeded()
         }
