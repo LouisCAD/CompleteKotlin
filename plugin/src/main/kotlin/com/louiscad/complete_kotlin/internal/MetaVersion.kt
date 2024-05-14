@@ -9,6 +9,9 @@ enum class MetaVersion(val metaString: String) {
     M2("M2"),
     RC("RC"),
     RC2("RC2"),
+    RC3("RC3"),
+    RC4("RC4"),
+    RC5("RC5"),
     PUB("PUB"),
     RELEASE("release");
 
