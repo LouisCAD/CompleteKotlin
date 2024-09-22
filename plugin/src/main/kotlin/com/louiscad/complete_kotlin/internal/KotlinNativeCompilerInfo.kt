@@ -13,7 +13,9 @@ internal class KotlinNativeCompilerInfo(
 ) {
 
     companion object {
-        val konanDir = File(System.getProperty("user.home")).resolve(".konan")
+        // https://github.com/JetBrains/kotlin/blob/master/kotlin-native/HACKING.md#compiler-environment-variables
+        val konanDir = System.getenv("KONAN_DATA_DIR")?.ifBlank { null }?.let { File(it) }
+            ?: File(System.getProperty("user.home")).resolve(".konan")
     }
 
     private val kindaSimpleOsName: String = when {
