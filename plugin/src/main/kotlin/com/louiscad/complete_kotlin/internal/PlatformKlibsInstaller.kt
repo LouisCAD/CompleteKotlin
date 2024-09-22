@@ -31,7 +31,14 @@ internal class PlatformKlibsInstaller(
         return project.repositories.ivy {
             setUrl(repoUrl)
             patternLayout {
-                artifact("[artifact]-[revision].[ext]")
+                // We shove everything into 'artifact' for 2 reasons:
+                // 1) We want to support both the old and new archive names and they don't have the same pattern.
+                // 2) Ivy doesn't seem to have a concept of classifier, so we can't support the new format
+                //    (kotlin-native-prebuilt-<version>-<platform>.<extension>) by keeping the version separate.
+                // Examples:
+                //  - kotlin-native-prebuilt-1.9.10-windows-x86_64.zip
+                //  - kotlin-native-prebuilt-windows-x86_64-2.0.20.zip
+                artifact("[artifact].[ext]")
             }
             metadataSources {
                 artifact()
@@ -49,8 +56,7 @@ internal class PlatformKlibsInstaller(
 
         val compilerDependency = project.dependencies.create(
             mapOf(
-                "name" to platformCompilerInfo.dependencyName,
-                "version" to platformCompilerInfo.compilerVersion.toString(),
+                "name" to platformCompilerInfo.archiveNameWithoutExtension, // corresponds to Ivy's `artifact`
                 "ext" to platformCompilerInfo.archiveExtension
             )
         )
@@ -76,7 +82,7 @@ internal class PlatformKlibsInstaller(
         logger.lifecycleWithDuration("Unpack of the magic to $compilerDirectory finished,") {
             project.copy {
                 from(archiveFileTree(archive)) {
-                    include("${platformCompilerInfo.dependencyNameWithVersion}/klib/platform/**")
+                    include("${platformCompilerInfo.rootDirName}/klib/platform/**")
                 }
                 into(hostCompilerDirs.completeKotlinExtractionDir)
             }
@@ -85,7 +91,7 @@ internal class PlatformKlibsInstaller(
                 file.isDirectory
             }?.asSequence()?.map { it.name }?.toList() ?: emptyList()
             hostCompilerDirs.completeKotlinExtractionDir
-                .resolve(platformCompilerInfo.dependencyNameWithVersion)
+                .resolve(platformCompilerInfo.rootDirName)
                 .resolve("klib")
                 .resolve("platform")
                 .listFiles { file ->
