@@ -12,7 +12,7 @@ internal class KotlinNativeCompilerDirs(compilerVersion: CompilerVersion) {
         hostPlatform = HostPlatform.current
     )
 
-    val compilerDir = KotlinNativeCompilerInfo.konanDir.resolve(compilerInfo.dependencyNameWithVersion)
+    val compilerDir = KotlinNativeCompilerInfo.konanDir.resolve(compilerInfo.rootDirName)
     val platformKlibsDir = compilerDir.resolve("klib").resolve("platform")
     val completeKotlinExtractionDir = platformKlibsDir.resolve("tmp-complete-kotlin")
 
