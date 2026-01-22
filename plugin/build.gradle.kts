@@ -1,10 +1,10 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
-    id("com.gradle.plugin-publish")
+    id("com.gradle.plugin-publish") version "2.0.0"
 }
 
 version = file("version.txt").useLines { it.first() }
@@ -20,22 +20,23 @@ gradlePlugin {
     }
 }
 
-pluginBundle {
-    website = "https://github.com/LouisCAD/CompleteKotlin"
-    vcsUrl = "https://github.com/LouisCAD/CompleteKotlin.git"
-    tags = listOf("kotlin", "kotlin-multiplatform", "kmm", "plugins")
-}
+//pluginBundle {
+//    website = "https://github.com/LouisCAD/CompleteKotlin"
+//    vcsUrl = "https://github.com/LouisCAD/CompleteKotlin.git"
+//    tags = listOf("kotlin", "kotlin-multiplatform", "kmm", "plugins")
+//}
 
 repositories { mavenCentral() }
 
 dependencies {
-    implementation(gradleKotlinDsl())
-    testImplementation(Kotlin.test.junit5)
+    implementation(kotlin("gradle-plugin", "2.3.0"))
+    testImplementation(kotlin("test-junit5"))
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
-    kotlinOptions.apiVersion = "1.4"
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    compilerOptions {
+        freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
+    }
 }
 
 java {

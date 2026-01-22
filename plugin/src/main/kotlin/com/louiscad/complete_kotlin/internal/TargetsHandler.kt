@@ -42,8 +42,8 @@ internal fun Project.completePlatformKlibsIfNeeded() {
 
     targets.all {
         val presetName = (this.javaClass.kotlin.memberProperties.first {
-            it.name == "preset"
-        }.call(this) as Named).name
+            it.name == "disambiguationClassifier"
+        }.call(this) as String)
         when (val platform = exclusiveHostPlatform(presetName = presetName)) {
             HostPlatform.current, null -> return@all
             else -> {

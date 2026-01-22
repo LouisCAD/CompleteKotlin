@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.5.32"
+    kotlin("multiplatform") version "2.3.0"
     id("com.louiscad.complete-kotlin")
 }
 
